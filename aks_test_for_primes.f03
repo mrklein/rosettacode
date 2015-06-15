@@ -20,6 +20,7 @@ program aks
   do n = 2, 35
     if (is_prime(n)) write(*, '(I4)', advance='no') n
   end do
+  write(*, *)
 
   ! Point #5
   do n = 2, 124
