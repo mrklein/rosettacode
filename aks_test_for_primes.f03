@@ -133,5 +133,7 @@ contains
     do i = 1, n + 1
       res = res .and. (mod(coeffs(i), n) == 0)
     end do
+
+    if (allocated(coeffs)) deallocate(coeffs)
   end function
 end program aks
