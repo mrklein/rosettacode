@@ -18,33 +18,23 @@ program mean_time_of_day
 
   write(*, fmt='(I2.2, '':'', I2.2, '':'', I2.2)') angle_to_time(mean)
 contains
-  function mean_angle(angles) result (res)
+  real(kind=dp) function mean_angle(angles)
     real(kind=dp), dimension(:), intent (in) :: angles
-    real(kind=dp) :: res
-
-    integer(kind=4) :: n, i
     real(kind=dp) :: x, y
 
-    n = size(angles)
-    x = 0
-    y = 0
-    do i = lbound(angles, 1), ubound(angles, 1)
-      x = x + sin(radians(angles(i)))
-      y = y + cos(radians(angles(i)))
-    end do
-    x = x/n
-    y = y/n
+    x = sum(sin(radians(angles)))/size(angles)
+    y = sum(cos(radians(angles)))/size(angles)
 
-    res = degrees(atan2(x, y))
+    mean_angle = degrees(atan2(x, y))
   end function
 
-  real(kind=dp) function radians(angle)
+  elemental real(kind=dp) function radians(angle)
     real(kind=dp), intent (in) :: angle
     real(kind=dp), parameter :: pi = 4d0*atan(1d0)
     radians = angle/180*pi
   end function
 
-  real(kind=dp) function degrees(angle)
+  elemental real(kind=dp) function degrees(angle)
     real(kind=dp), intent (in) :: angle
     real(kind=dp), parameter :: pi = 4d0*atan(1d0)
     degrees = 180*angle/pi
@@ -66,17 +56,16 @@ contains
     res = 360*seconds/seconds_in_day
   end function
 
-  function angle_to_time(angle) result (res)
+  elemental type(time_t) function angle_to_time(angle)
     real(kind=dp), intent (in) :: angle
-    type(time_t) :: res
 
     real(kind=dp) :: seconds
     real(kind=dp), parameter :: seconds_in_day = 24*60*60
 
     seconds = seconds_in_day*angle/360d0
-    res%hours = int(seconds/60d0/60d0)
+    angle_to_time%hours = int(seconds/60d0/60d0)
     seconds = mod(seconds, 60d0*60d0)
-    res%minutes = int(seconds/60d0)
-    res%seconds = mod(seconds, 60d0)
+    angle_to_time%minutes = int(seconds/60d0)
+    angle_to_time%seconds = mod(seconds, 60d0)
   end function
 end program
